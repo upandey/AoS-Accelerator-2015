@@ -1,0 +1,56 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" standardController="Asset" extensions="AssetController">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Temperature Slider</title>
+
+     <!-- Material Design (MDL CSS & JS & ICONS) -->
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.indigo-pink.min.css"> </link>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></link>
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.min.js"></script>
+
+    <!-- AngularJS (JS) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script> 
+    <script src="{!URLFOR($Resource.AngularMP, 'js/vendor/jquery-2.0.0.min.js')}"></script>
+    
+    <!-- JQuery UI (JS) -->
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"></link>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+</head>
+<body>
+<div ng-app="myApp" ng-controller="tempCtrl" ng-init="temperatureVal=50"> 
+    <main class="mdl-layout__content">
+        <div class="page-content">
+            <p>
+                Temperature: {{temperatureVal}}&#8457;
+            </p>
+            <p style="width:300px;">
+                     <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="0" tabindex="0" id="s1" ng-model="temperatureVal"/>                  
+            </p>
+             <a class="mdl-button mdl-js-button mdl-button--raised" id="update-button" onclick="insertTemp(s1.value, '{!asset.Id}');">
+                 Update
+             </a>
+        </div>
+    </main>
+    <script type="text/javascript">
+    function insertTemp(temperature, assetId){
+            Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.AssetController.insertTemperatureRecord}',
+            temperature, assetId,
+            function(result, event){
+                console.log('temperature record added!');
+               window.top.location.href='/'+assetId;
+            });
+    }
+    </script>
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('tempCtrl', function($scope) {
+        });
+    </script>
+</div>
+</body>
+</apex:page>

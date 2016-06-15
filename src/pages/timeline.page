@@ -1,0 +1,70 @@
+<apex:page showHeader="false" sidebar="false" standardStylesheets="false" standardController="Case" extensions="CaseController">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- Material Design (MDL CSS & JS & ICONS) -->
+    <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.indigo-pink.min.css" />
+    <script src="https://storage.googleapis.com/code.getmdl.io/1.0.1/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+     <!-- AngularJS (JS) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+     
+     <!-- JQuery (JS) -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <style>
+        .timeline-main {
+            width: 1500;
+            height: 600;
+            }
+    </style>
+</head>
+<body>
+    <!-- <div id="timeline-main"> -->
+        <div id='my-timeline'>
+        </div>
+    <!-- </div> -->
+    <script type="text/javascript">
+        var caseId = '{!Case.Id}';
+        var storyjs_jsonp_data ;
+        var $j = jQuery.noConflict(); 
+      $j(document).ready(function() {
+          //caseId = {!Case.Id};
+          console.log('caseId -- > '+caseId);
+          initializeTimeline(caseId);
+      });
+      
+      function initializeTimeline(caseId){
+        Visualforce.remoting.Manager.invokeAction(
+            '{!$RemoteAction.CaseController.getTimeLine}',
+            caseId, 
+            function(result, event){
+                if (event.status) {
+                    var datastr = JSON.stringify(result);
+                    console.log(datastr);
+                    datastr = datastr.replace("mydate", "date");
+                    storyjs_jsonp_data = JSON.parse(datastr);
+
+                    createStoryJS({
+                          type:       'timeline',
+                          width:      '900',
+                          height:     '600',
+                          source:     storyjs_jsonp_data,
+                          embed_id:   'my-timeline'
+                    });
+
+                } else if (event.type === 'exception') {
+                    alert(event.message);
+                } else {
+                    alert(event.message);
+                }
+            }, 
+            {escape: false}
+        );
+      }
+    </script>      
+    <script type="text/javascript" src="https://cdn.knightlab.com/libs/timeline/latest/js/storyjs-embed.js"></script>
+</body>
+</apex:page>
